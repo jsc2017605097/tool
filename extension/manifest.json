@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Cập nhật CCCD hàng loạt - Tiêm chủng",
+  "version": "1.0.0",
+  "description": "Tải file CSV (Mã đối tượng + Mã định danh) và tự động điền/lưu vào phần mềm tiêm chủng vncdc.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://tiemchung.vncdc.gov.vn/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://tiemchung.vncdc.gov.vn/TiemChung/DoiTuong/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    }
+  ]
+}

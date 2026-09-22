@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Du lieu ca nhan cong dan (CCCD, ho ten, ngay sinh...) - KHONG duoc commit
+output/
+
+# macOS
+.DS_Store
