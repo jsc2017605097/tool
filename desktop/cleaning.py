@@ -149,12 +149,34 @@ def convert(path: str | Path) -> ConvertResult:
     for c in cleaned:
         id_counts[c["ma"]] = id_counts.get(c["ma"], 0) + 1
 
-    records = []
+    after_id_dedup = []
     for c in cleaned:
         if id_counts[c["ma"]] > 1:
             warnings.append({
                 "ma": c["ma"], "ten": c["ten"], "raw_cccd": c["cccd"],
                 "reason": "Trùng Mã đối tượng với (các) dòng khác trong file — cần kiểm tra tay",
+            })
+            continue
+        after_id_dedup.append(c)
+
+    # Mot so dinh danh CCCD chi thuoc ve DUY NHAT mot nguoi. Neu cung 1 CCCD
+    # xuat hien o 2 Ma doi tuong khac nhau trong file, gan nhu chac chan mot
+    # trong hai la ban ghi doi tuong bi trung/nhap sai trong he thong nguon --
+    # khong tu chon dai dien, day het ra canh bao de nguoi dung doi chieu
+    # (ten, ngay sinh) va tu quyet dinh giu dong nao.
+    cccd_counts: dict[str, int] = {}
+    for c in after_id_dedup:
+        cccd_counts[c["cccd"]] = cccd_counts.get(c["cccd"], 0) + 1
+
+    records = []
+    for c in after_id_dedup:
+        if cccd_counts[c["cccd"]] > 1:
+            warnings.append({
+                "ma": c["ma"], "ten": c["ten"], "raw_cccd": c["cccd"],
+                "reason": (
+                    "Mã định danh này trùng với (các) Mã đối tượng khác trong file — "
+                    "có thể là bản ghi đối tượng bị trùng/nhập sai, cần kiểm tra tay"
+                ),
             })
             continue
         records.append(c)
