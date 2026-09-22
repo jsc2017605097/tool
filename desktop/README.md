@@ -1,5 +1,7 @@
 # Làm sạch & chuyển đổi danh sách CCCD → CSV
 
+**Phát triển bởi Nguyễn Đỗ Cường.**
+
 App desktop (Windows) độc lập với extension Chrome — dùng để làm sạch file
 danh sách đối tượng (Excel hoặc CSV, tên cột tuỳ ý) và xuất ra file `.csv`
 đúng định dạng mà extension "Cập nhật CCCD hàng loạt" cần.
@@ -41,6 +43,6 @@ python clean_app.py
 ```
 cd desktop
 pip install -r requirements.txt
-pyinstaller --onefile --windowed --name LamSachCCCD clean_app.py
+pyinstaller --onefile --windowed --name LamSachCCCD --version-file version_info.txt clean_app.py
 ```
 File `.exe` sẽ nằm ở `desktop/dist/LamSachCCCD.exe`.

@@ -27,7 +27,7 @@ jobs:
       - name: Build .exe with PyInstaller
         working-directory: desktop
         run: |
-          pyinstaller --onefile --windowed --name LamSachCCCD clean_app.py
+          pyinstaller --onefile --windowed --name LamSachCCCD --version-file version_info.txt clean_app.py
 
       - name: Upload .exe artifact
         uses: actions/upload-artifact@v4

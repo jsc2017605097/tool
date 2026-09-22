@@ -1,7 +1,8 @@
 [project]
 name = "tiem-chung-tool"
 version = "0.1.0"
-description = "Add your description here"
+description = "Công cụ đối chiếu & làm sạch dữ liệu CCCD cho phần mềm tiêm chủng"
+authors = [{ name = "Nguyễn Đỗ Cường" }]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

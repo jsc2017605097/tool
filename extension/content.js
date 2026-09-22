@@ -1,5 +1,6 @@
 /*
  * Cap nhat CCCD hang loat - Tiem chung vncdc
+ * Phat trien boi Nguyen Do Cuong
  * Content script chay trong MAIN world (co the dung truc tiep window.jQuery cua trang).
  * Chi hoat dong tren trang /TiemChung/DoiTuong/Index. Khong tu dong chay gi ca cho den
  * khi nguoi dung tai file CSV len va bam "Bat dau" trong bang dieu khien noi tren trang.
@@ -282,6 +283,9 @@
       <span id="cccd-panel-toggle">▾</span>
     </div>
     <div id="cccd-panel-body" style="padding:12px;overflow:auto;">
+      <div style="margin:-4px 0 10px;font-size:11px;color:#888;">
+        Phát triển bởi <b>Nguyễn Đỗ Cường</b>
+      </div>
       <div style="margin-bottom:8px;">
         <label>File CSV (Mã đối tượng + Mã định danh):</label><br/>
         <input type="file" id="cccd-file-input" accept=".csv" style="width:100%;margin-top:4px;">

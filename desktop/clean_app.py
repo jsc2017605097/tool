@@ -2,6 +2,8 @@
 App desktop (Windows) - Lam sach & chuyen doi danh sach doi tuong sang CSV
 dung dinh dang cho extension "Cap nhat CCCD hang loat".
 
+Phat trien boi Nguyen Do Cuong.
+
 Chay truc tiep: python clean_app.py
 Dong goi .exe: xem .github/workflows/build-windows-app.yml (PyInstaller).
 """
@@ -15,14 +17,15 @@ from tkinter import filedialog, messagebox, ttk
 from cleaning import convert, write_records_csv, write_warnings_csv
 
 APP_TITLE = "Làm sạch & chuyển đổi danh sách CCCD"
+APP_AUTHOR = "Nguyễn Đỗ Cường"
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title(APP_TITLE)
-        self.geometry("860x560")
-        self.minsize(720, 480)
+        self.title(f"{APP_TITLE} — by {APP_AUTHOR}")
+        self.geometry("860x580")
+        self.minsize(720, 500)
 
         self.input_path: Path | None = None
         self.result = None
@@ -65,6 +68,12 @@ class App(tk.Tk):
             bottom, text="Lưu danh sách cần kiểm tra...", command=self.on_save_warnings, state="disabled"
         )
         self.save_warn_btn.pack(side="left", padx=8)
+
+        footer = ttk.Frame(self, padding=(10, 0, 10, 6))
+        footer.pack(fill="x")
+        ttk.Label(
+            footer, text=f"Phát triển bởi {APP_AUTHOR}", foreground="#888", font=("", 9)
+        ).pack(side="right")
 
     def _make_tree(self, parent, columns):
         frame = ttk.Frame(parent)
