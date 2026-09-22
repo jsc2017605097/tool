@@ -152,13 +152,18 @@
     saveBtn.click();
     await sleep(500);
 
-    const modalBtn = await waitForElement(() => {
-      return Array.from(document.querySelectorAll("button")).find(
-        (b) => b.textContent.trim() === "Tiếp tục" && b.offsetParent !== null
-      );
-    }, 1800, 150);
-    if (modalBtn) {
+    // co the co NHIEU dialog canh bao lien tiep (vd thieu SDT ca me lan bo) --
+    // bam "Tiep tuc" lap lai cho den khi khong con dialog nao xuat hien nua,
+    // toi da 5 lan de tranh treo neu co loi khac.
+    for (let i = 0; i < 5; i++) {
+      const modalBtn = await waitForElement(() => {
+        return Array.from(document.querySelectorAll("button")).find(
+          (b) => b.textContent.trim() === "Tiếp tục" && b.offsetParent !== null
+        );
+      }, 1800, 150);
+      if (!modalBtn) break;
       modalBtn.click();
+      await sleep(400);
     }
 
     return await waitFor(() => {
@@ -302,6 +307,9 @@
         <button id="cccd-stop-btn" disabled style="padding:5px 10px;">⏹ Dừng</button>
         <button id="cccd-export-btn" disabled style="padding:5px 10px;">⬇ Tải log</button>
       </div>
+      <div style="margin-bottom:8px;">
+        <button id="cccd-retry-btn" disabled style="padding:5px 10px;">🔁 Chạy lại các dòng lỗi</button>
+      </div>
 
       <div id="cccd-progress" style="font-weight:bold;margin-bottom:6px;">Chưa có file nào được tải lên.</div>
       <div id="cccd-log" style="height:240px;overflow:auto;border:1px solid #e0e0e0;
@@ -335,8 +343,10 @@
   function updateProgress() {
     const okCount = results.filter((r) => r.status === "ok").length;
     const failCount = results.filter((r) => r.status === "fail").length;
+    // dung state.index (tien do cua LUOT CHAY hien tai) lam tu so, vi sau khi
+    // "Chay lai loi" thi records chi con la tap con nho hon results tich luy
     $("cccd-progress").textContent =
-      `Đã xử lý ${results.length}/${records.length}  ·  OK: ${okCount}  ·  Lỗi: ${failCount}`;
+      `Đã xử lý ${state.index + 1}/${records.length}  ·  OK: ${okCount}  ·  Lỗi: ${failCount}`;
   }
 
   $("cccd-file-input").addEventListener("change", (e) => {
@@ -368,6 +378,8 @@
       $("cccd-file-summary").textContent = `Đã nạp ${records.length} bản ghi từ file.`;
       $("cccd-progress").textContent = `Sẵn sàng xử lý ${records.length} bản ghi.`;
       $("cccd-start-btn").disabled = records.length === 0;
+      $("cccd-export-btn").disabled = true;
+      $("cccd-retry-btn").disabled = true;
       $("cccd-log").innerHTML = "";
     };
     reader.readAsText(file, "utf-8");
@@ -414,6 +426,7 @@
 
       result.maDoiTuong = rec.maDoiTuong;
       result.ten = rec.ten;
+      result.cccd = rec.cccd;
       results.push(result);
 
       const label = `${rec.maDoiTuong} — ${rec.ten || ""}`;
@@ -433,6 +446,7 @@
     $("cccd-pause-btn").disabled = true;
     $("cccd-stop-btn").disabled = true;
     $("cccd-export-btn").disabled = results.length === 0;
+    $("cccd-retry-btn").disabled = results.filter((r) => r.status === "fail").length === 0;
     if (state.index >= records.length) {
       logLine("— Hoàn tất toàn bộ hàng đợi —", "");
     } else {
@@ -440,10 +454,29 @@
     }
   }
 
+  function retryFailed() {
+    const failedIds = new Set(
+      results.filter((r) => r.status === "fail").map((r) => r.maDoiTuong)
+    );
+    if (failedIds.size === 0) return;
+
+    records = results
+      .filter((r) => failedIds.has(r.maDoiTuong))
+      .map((r) => ({ maDoiTuong: r.maDoiTuong, cccd: r.cccd, ten: r.ten }));
+    // bo cac ket qua loi cu ra khoi results, se duoc ghi lai sau khi chay lai
+    results = results.filter((r) => !failedIds.has(r.maDoiTuong));
+    state.index = 0;
+
+    logLine(`— Chạy lại ${records.length} dòng lỗi —`, "");
+    $("cccd-retry-btn").disabled = true;
+    runLoop();
+  }
+
   $("cccd-start-btn").addEventListener("click", () => {
     if (records.length === 0) return;
     runLoop();
   });
+  $("cccd-retry-btn").addEventListener("click", retryFailed);
   $("cccd-pause-btn").addEventListener("click", () => {
     state.paused = !state.paused;
     $("cccd-pause-btn").textContent = state.paused ? "▶ Tiếp tục" : "⏸ Tạm dừng";
